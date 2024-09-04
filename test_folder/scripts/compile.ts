@@ -1,33 +1,33 @@
-import * as fs from "fs";
-import { readFileSync } from "fs";
-import process from "process";
-import { Cell } from "ton-core";
-import { compileFunc } from "@ton-community/func-js";
+import { Cell, Address, toNano } from "ton-core";
+import { hex } from "../build/main.compiled.json";
+import { Blockchain } from "@ton-community/sandbox";
+import { MainContract } from "../wrappers/MainContract";
+import { send } from "process";
+import "@ton-community/test-utils";
 
-async function compileScript() {
+describe("test tests", () => {
+	it("test of test", async() => {
+		const codeCell = Cell.fromBoc(Buffer.from(hex,"hex"))[0];
 
-	const compileResult = await compileFunc({
-		targets: ["./contracts/main.fc"], 
-		sources: (path) => readFileSync(path).toString("utf8"),
+		const blockchain = await Blockchain.create();
+
+		const myContract = blockchain.openContract(
+			await MainContract.createFromConfig({}, codeCell)
+		);
+
+		const senderWallet = await blockchain.treasury("sender");
+
+		const sentMessageResult = await myContract.sendInternalMessage(senderWallet.getSender(),toNano("0.05"));
+
+		expect(sentMessageResult.transactions).toHaveTransaction({
+			from: senderWallet.address,
+			to: myContract.address,
+			success: true,
+		});
+
+		const getData = await myContract.getData();
+
+		expect(getData.recent_sender.toString()).toBe(senderWallet.address.toString());
+		expect(getData.number).toEqual(1); 
 	});
-
-	if (compileResult.status ==="error") {
-		console.log("Error happend");
-		process.exit(1);
-	}
-
-	const hexBoC = 'build/main.compiled.json';
-
-	fs.writeFileSync(
-		hexBoC,
-		JSON.stringify({
-			hex: Cell.fromBoc(Buffer.from(compileResult.codeBoc,"base64"))[0]
-				.toBoc()
-				.toString("hex"),
-		})
-
-	);
-    console.log("Compiled, hexBoC:"+hexBoC);
-}
-
-compileScript();
+});

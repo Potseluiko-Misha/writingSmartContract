@@ -25,5 +25,9 @@ describe("test tests", () => {
 			success: true,
 		});
 
+		const getData = await myContract.getData();
+
+		expect(getData.recent_sender.toString()).toBe(senderWallet.address.toString());
+
 	});
 });
