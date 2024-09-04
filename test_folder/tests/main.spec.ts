@@ -3,6 +3,7 @@ import { hex } from "../build/main.compiled.json";
 import { Blockchain } from "@ton-community/sandbox";
 import { MainContract } from "../wrappers/MainContract";
 import { send } from "process";
+import "@ton-community/test-utils";
 
 describe("test tests", () => {
 	it("test of test", async() => {
@@ -16,6 +17,13 @@ describe("test tests", () => {
 
 		const senderWallet = await blockchain.treasury("sender");
 
-		myContract.sendInternalMessage(senderWallet.getSender(),toNano("0.05"));
+		const sentMessageResult = await myContract.sendInternalMessage(senderWallet.getSender(),toNano("0.05"));
+
+		expect(sentMessageResult.transactions).toHaveTransaction({
+			from: senderWallet.address,
+			to: myContract.address,
+			success: true,
+		});
+
 	});
 });
