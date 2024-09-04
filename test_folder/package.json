@@ -20,5 +20,8 @@
   "scripts": {
     "compile": "ts-node ./scripts/compile.ts",
     "test": "yarn jest"
+  },
+  "dependencies": {
+    "@ton-community/test-utils": "^0.3.0"
   }
 }
