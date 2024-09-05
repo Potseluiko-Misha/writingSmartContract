@@ -19,7 +19,8 @@
   },
   "scripts": {
     "compile": "ts-node ./scripts/compile.ts",
-    "test": "yarn jest"
+    "test": "yarn jest",
+    "deploy": "yarn compile && ts-node ./scripts/deploy.ts"
   },
   "dependencies": {
     "@ton-community/test-utils": "^0.3.0"
