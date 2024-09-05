@@ -9,6 +9,16 @@ async function deployContract() {
 		code: codeCell,
 		data: dataCell,
 	};
+
+	const stateInitBuilder = beginCell();
+	storeStateInit(stateInit)(stateInitBuilder);
+	const stateInitCell = stateInitBuilder.endCell();
+
+	const address = contractAddress(0, {
+		code: codeCell,
+		data: dataCell,
+	});
+
 }
 
 deployContract()
